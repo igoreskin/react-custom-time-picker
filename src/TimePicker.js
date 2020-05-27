@@ -50,7 +50,22 @@ const TimePicker = () => {
 
   const onTimeSet = event => {
     let time = event.target.value;
-    if (time.slice(-3) === " AM" || time.slice(-3) === " PM") time = time.slice(0,-3);
+    let AMPM = null;
+    if (
+      time.slice(-3) === " AM" 
+      || time.slice(-3) === " PM" 
+      || time.slice(-3) === " am" 
+      || time.slice(-3) === " pm"
+    ) {AMPM = time.slice(-3).toUpperCase(); time = time.slice(0, -3)}
+
+    if (!time.includes(":") && (time.length === 3 || time.length === 4)) {
+      const idx = time.length - 2;
+      time = time.split('');
+      time.splice(idx, 0, ":");
+      time = time.join('');
+    }
+
+    if (time.length < 3) time = `${time}:00`;
 
     const regEx = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
     const isInputValid = time.match(regEx);
@@ -62,7 +77,7 @@ const TimePicker = () => {
       let h = (H % 12) || 12;
       h = (h < 10) ? ("0" + h) : h;
       let ampm = H < 12 ? " AM" : " PM";
-      time = h + time.substr(2, 3) + ampm; 
+      AMPM ? time = h + time.substr(2, 3) + AMPM : time = h + time.substr(2, 3) + ampm; 
       setTimeValue(time);
     } else {
       setTimeValue("")
